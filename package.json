@@ -11,6 +11,7 @@
     "build:gh-pages": "vite build --base=/vue2-fintech && touch dist/.nojekyll"
   },
   "dependencies": {
+    "@mdi/font": "7.2.96",
     "axios": "1.4.0",
     "dayjs": "1.11.9",
     "nanoid": "4.0.2",

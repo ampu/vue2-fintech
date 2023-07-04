@@ -1,5 +1,6 @@
 <template>
   <ValidationObserver
+    class="user-form-container"
     ref="validation"
     v-slot="{invalid}"
   >
@@ -11,15 +12,13 @@
       <ValidationProvider
         v-slot="{errors}"
         name="ФИО"
-        :rules="NAME_RULES"
+        :rules="USER_NAME_RULES"
       >
         <VTextField
-          ref="name"
           v-model.trim="props.user.name"
           label="ФИО"
           counter
           :error-messages="errors"
-          required
         />
       </ValidationProvider>
 
@@ -29,11 +28,10 @@
         rules="required"
       >
         <VTextField
-          v-model="props.user.birth"
+          :value="formatDate(props.user.birth)"
           label="Дата рождения"
           :error-messages="errors"
           readonly
-          required
           @click="isBirthPickerActive = true"
           @focus="isBirthPickerActive = true"
         />
@@ -47,7 +45,7 @@
           attach=".birth-container"
         >
           <VDatePicker
-            v-model="isoBirth"
+            v-model="props.user.birth"
             label="Дата рождения"
             :firstDayOfWeek="1"
             locale="ru-RU"
@@ -66,7 +64,6 @@
           :items="occupations"
           label="Специализация"
           :error-messages="errors"
-          required
         />
       </ValidationProvider>
 
@@ -84,33 +81,14 @@
 </template>
 
 <script setup>
-import {computed, ref, watchEffect} from 'vue'
+import {ref, watchEffect} from 'vue'
 import dayjs from 'dayjs'
-import {extend, ValidationObserver, ValidationProvider, setInteractionMode} from 'vee-validate'
-import {required} from 'vee-validate/dist/rules'
+import {ValidationObserver, ValidationProvider, setInteractionMode} from 'vee-validate'
 
 import {useEscapeListener} from '../composables/use-escape-listener'
-import {isNewUser} from '../utils/user-utils'
+import {isNewUser, USER_NAME_RULES} from '../utils/user-utils'
 
 setInteractionMode(`eager`)
-
-extend(`required`, {...required, message: 'Поле обязательно для заполнения'})
-
-extend(`cyrillic`, {
-  message: `Только кирилица`,
-  validate: (v) => /^[а-яё ]+$/i.test(v),
-})
-
-extend(`min_words`, {
-  message: (field, params) => `Минимум ${params[0]} слова`,
-  validate: (v, [minWords]) => v?.split(` `).filter(Boolean).length >= minWords,
-})
-
-const NAME_RULES = {
-  required: true,
-  cyrillic: true,
-  min_words: 2,
-}
 
 /** @type {{user: User, occupations: Occupation[]}} props */
 const props = defineProps({
@@ -121,26 +99,7 @@ const props = defineProps({
 const emit = defineEmits([`submit`])
 
 const validation = ref()
-const name = ref()
 const isBirthPickerActive = ref(false)
-
-const isoBirth = computed({
-  get() {
-    if (!props.user.birth) {
-      return
-    }
-    const [day, month, year] = props.user.birth.split(`.`)
-    return `${year}-${month}-${day}`
-  },
-  set(value) {
-    if (!value) {
-      props.user.birth = undefined
-      return
-    }
-    const [year, month, day] = value.split(`-`)
-    props.user.birth = `${day}.${month}.${year}`
-  },
-})
 
 const submit = async () => {
   const valid = await validation.value.validate()
@@ -151,20 +110,21 @@ const submit = async () => {
 }
 
 const formatDate = (value) => {
-  return dayjs(value).format(`DD.MM.YYYY`)
+  return value
+    ? dayjs(value).format(`DD.MM.YYYY`)
+    : null
 }
-
-watchEffect(() => {
-  if (isNewUser(props.user)) {
-    validation.value.reset()
-    name.value.focus()
-  }
-})
 
 useEscapeListener(isBirthPickerActive)
 </script>
 
 <style lang="scss" scoped>
+.user-form-container {
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+}
+
 .birth-container {
   position: relative;
 }

@@ -6,7 +6,9 @@
       absolute
     />
 
-    <VContainer class="container">
+    <VContainer
+      class="app-container mt-5"
+    >
       <VAlert
         v-if="occupationsOp.isError"
         type="error"
@@ -18,55 +20,46 @@
       </VAlert>
 
       <UserForm
-        :user="formUser"
+        :key="newUser.id"
+        :user="newUser"
         :occupations="occupations"
-        @submit="submit"
+        @submit="addUser"
       />
 
-      <UserTable
-        v-if="tableUser"
-        :user="tableUser"
-        :occupations="occupations"
+      <UsersTable
+        v-if="users.length !== 0"
+        :users="users"
+        @remove="removeUser"
       />
-
-      <VBtn
-        v-if="tableUser"
-        color="error"
-        block
-        @click="clear"
-      >
-        Удалить запись
-      </VBtn>
     </VContainer>
   </VApp>
 </template>
 
 <script setup>
 import {onMounted, ref} from 'vue'
-import {nanoid} from 'nanoid'
-
-import UserTable from './components/UserTable.vue'
+import UsersTable from './components/UsersTable.vue'
 import UserForm from './components/UserForm.vue'
 
 import {Ops, runOp} from './utils/op-utils'
 import {apiProvider} from './utils/api-provider'
+import {createUser, cloneUser} from './utils/user-utils'
 
-const formUser = ref({
-  id: nanoid(),
-  name: undefined,
-  birth: undefined,
-  occupationId: undefined,
-})
-const tableUser = ref()
 const occupations = ref([])
 const occupationsOp = ref(Ops.DEFAULT)
+const newUser = ref(createUser())
+const users = ref([])
 
-const submit = () => {
-  tableUser.value = {...formUser.value}
+const addUser = () => {
+  const user = cloneUser(newUser.value)
+  newUser.value = createUser()
+  users.value.push(user)
 }
 
-const clear = () => {
-  tableUser.value = undefined
+const removeUser = (user) => {
+  const userOrder = users.value.findIndex(({id}) => user.id === id)
+  if (userOrder !== -1) {
+    users.value.splice(userOrder, 1)
+  }
 }
 
 onMounted(async () => {
@@ -75,9 +68,10 @@ onMounted(async () => {
 </script>
 
 <style lang="scss" scoped>
-.container {
+.app-container {
   display: flex;
   flex-flow: column;
+  justify-content: center;
   gap: 20px;
 }
 </style>
