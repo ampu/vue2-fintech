@@ -1,0 +1,25 @@
+$menu-content-border-radius: 0;
+$menu-content-elevation: 0;
+
+:root {
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+
+  color: #444444;
+  background: #fefefe;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  display: flex;
+  flex-flow: column;
+
+  font-family: tahoma, sans-serif;
+  line-height: 1.5;
+  font-size: 16px;
+  font-weight: 400;
+}
