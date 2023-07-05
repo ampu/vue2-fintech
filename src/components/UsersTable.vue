@@ -21,21 +21,14 @@
       </template>
 
       <template #item.name="{item}">
-        <ValidationProvider
-          v-slot="{errors}"
-          :rules="USER_NAME_RULES"
-        >
-          <VTextField
-            v-model.trim="item.name"
-            :error-messages="errors"
-          />
-        </ValidationProvider>
+        <UserNameInput
+          :user="item"
+        />
       </template>
 
       <template #item.importance="{item}">
-        <VSelect
-          :items="IMPORTANCE_ITEMS"
-          v-model="item.importance"
+        <UserImportanceInput
+          :user="item"
         />
       </template>
     </VDataTable>
@@ -44,9 +37,9 @@
 
 <script setup>
 import {computed} from 'vue'
-import {ValidationProvider} from 'vee-validate'
 
-import {IMPORTANCE_ITEMS, USER_NAME_RULES} from '../utils/user-utils'
+import UserNameInput from './UserNameInput.vue'
+import UserImportanceInput from './UserImportanceInput.vue'
 
 const HEADERS = [
   {text: `ID клиента`, value: `id`},

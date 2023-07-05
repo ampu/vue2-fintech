@@ -10,6 +10,11 @@ export type User = {
   importance?: number,
 }
 
+export type Occupation = {
+  value: string,
+  text: string,
+}
+
 export const IMPORTANCE_ITEMS = [1, 2, 3]
 
 extend(`required`, {...required, message: 'Поле обязательно для заполнения'})

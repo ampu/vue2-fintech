@@ -1,6 +1,6 @@
 import axios, {AxiosInstance} from 'axios'
 
-import {Occupation} from './occupation-utils.ts'
+import {Occupation} from './user-utils'
 
 const BASE_URL = `https://pp.credit/Services/BrokerService/api`
 const REQUEST_TIMEOUT = 5000
